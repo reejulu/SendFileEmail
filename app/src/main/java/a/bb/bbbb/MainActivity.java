@@ -92,38 +92,20 @@ public class MainActivity extends AppCompatActivity {
 
         //->https://www.c-sharpcorner.com/article/java-mail-api-using-gmail-oauth-api-in-android/
 
-        //https://developers.google.com/gmail/api/quickstart/js
-        // o en android
-        //http://www.androidmads.info/2016/06/java-mail-api-using-gmail-oauth-api-in.html
-        //https://www.ladrupalera.com/es/drupal/desarrollo/javascript/como-usar-una-api-de-google-con-autenticacion-traves-de-oauth2
-        //https://developers.google.com/api-client-library/java/google-api-java-client/dev-guide
-
-        //https://mscdroidlabs.es/como-obtener-la-huella-digital-sha1-de-tu-app/
-        //https://developers.google.com/gmail/api/v1/reference/
-
-
-        //https://developers.google.com/identity/protocols/OAuth2
-        //https://developers.google.com/gmail/api/
-
-        //https://stackoverflow.com/questions/37136085/how-to-integrate-gmail-api-in-android-app
-        //https://developers.google.com/gsuite/guides/android#step_5_setup_the_sample
-
-        //https://developers.google.com/gmail/api/guides/sending#creating_messages_with_attachments
-
     /*
-    You need to set up your Android app key in Google Dev Console.
-https://stackoverflow.com/questions/25668152/gmail-api-access-using-android
+        You need to set up your Android app key in Google Dev Console.
+        https://stackoverflow.com/questions/25668152/gmail-api-access-using-android
 
-1-Choose your project, select API & Auth, then click Credentials
-2-Create new client id (though it has other client ids)
-3-Select installed app -> android
-4-Fill in your package name and SHA1 correctly
-5-Create new Key (though it has other client keys)
-6-Select Android key
-7-Fill in the SHA1;packageName like this: 45:B5:E4:6F:36:AD:0A:98:94:B4:02:66:2B:12:17:F2:56:26:A0:E0;
-com.example
-Your problem will be automatically solved. Be sure to create client id and key
-with both your debug keystore and release keystore
+        1-Choose your project, select API & Auth, then click Credentials
+        2-Create new client id (though it has other client ids)
+        3-Select installed app -> android
+        4-Fill in your package name and SHA1 correctly
+        5-Create new Key (though it has other client keys)
+        6-Select Android key
+        7-Fill in the SHA1;packageName like this: 45:B5:E4:6F:36:AD:0A:98:94:B4:02:66:2B:12:17:F2:56:26:A0:E0;
+            com.example
+        Your problem will be automatically solved. Be sure to create client id and key
+        with both your debug keystore and release keystore
      */
 
 
@@ -176,21 +158,20 @@ with both your debug keystore and release keystore
         // Initializing Progress Dialog
         mProgress = new ProgressDialog(this);
         mProgress.setMessage("Sending...");
-
-       // toolbar = (Toolbar) findViewById(R.id.toolbar);
-       // setSupportActionBar(toolbar);
+        // Definition of different views
         sendFabButton = (FloatingActionButton) findViewById(R.id.fab);
         edtToAddress = (EditText) findViewById(R.id.to_address);
         edtSubject = (EditText) findViewById(R.id.subject);
         edtMessage = (EditText) findViewById(R.id.body);
         edtAttachmentData = (EditText) findViewById(R.id.attachmentData);
+        // Fill in different fields for our e-mail
         edtToAddress.setText("reejulu1@gmail.com");
         edtSubject.setText("Informe");
         edtMessage.setText("Adjunto se envia el fichero .pdf con el reporte semanal");
-
+        // request to attacth the report pdf file to the e-mail
         Intent intent = new Intent(this, CopiaMain1Activity.class);
-        startActivityForResult(intent,1);
-
+        startActivityForResult(intent, Utils.REQUEST_INSERT_FILE_REPORT);
+        // The execution will continue in onActivityResult for REQUEST_INSERT_FILE_REPORT(2)
     }
 
 
@@ -312,28 +293,31 @@ with both your debug keystore and release keystore
                     fileName = getPathFromURI(imageUri);
                     edtAttachmentData.setText(fileName);
                 }
+                break;
+            case Utils.REQUEST_INSERT_FILE_REPORT:
+                // It is comming from CopiaMain1Activity with the path name
+                //        For our test the path and file name is:
+                //        path = "data/data/a.bb.bbbb/files/test.txt";
+                String filepath =data.getStringExtra("MESSAGE");
+                // check if file is present
+                File file = new File(filepath);
 
+                if (file.exists()){
+                    // IT WILL SEND THE MAIL WITH THE REPORT FILE
+                    photo_uri = Uri.parse(filepath);
+                    fileName = filepath;
+                    Log.i("MIAPP","fileName es : "+fileName);
+                    edtAttachmentData.setText(fileName);
+                    //
 
-
-        }
-        if(requestCode==1)
-        {
-            String filepath =data.getStringExtra("MESSAGE");
-            // check if file is present
-            File file = new File(filepath);
-
-            if (file.exists()){
-
-                photo_uri = Uri.parse(filepath);
-                fileName = filepath;
-                Log.i("MIAPP","fileName es : "+fileName);
-                edtAttachmentData.setText(fileName);
+                }else { // REPORT FILE IS NOT SENT AND E-MAIL subjet and message body are changed.
+                    edtSubject.setText("Informe No disponible");
+                    edtMessage.setText("Contacte con el administrador");
+                }
                 getResultsFromApi(sendFabButton);
-
-            }
-
+                break;
         }
-    }
+     }
 
     public String getPathFromURI(Uri contentUri) {
         String res = null;

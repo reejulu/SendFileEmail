@@ -9,10 +9,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 
 public class CopiaMain1Activity extends AppCompatActivity {
     String path;
@@ -21,25 +18,21 @@ public class CopiaMain1Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main1);
+        // EL FICHERO CON EL INFORME IRA GUARDADO EN path:
+        //  para pruebas lo hemos llamado "text.txt"
         path = "data/data/a.bb.bbbb/files/test.txt";
+        // SI EL FICHERO EXISTE HAY QUE BORRARLO PUES ESO SIGNIFICA QUE ES ANTIGUO
+        File f = new File(path);
+        f.delete();
 
-        // COMPROBAMOS SI EXISTE EL FICHERO EN DIRECTORIO ASSETS
-        AssetManager assetManager1 = getAssets();
-        try {
-            InputStream is1 = assetManager1.open("test.txt");
-        } catch (IOException e) {
-            // no existe el fichero, entonces continuar y luego no adjunta el fichero
-            Log.i("MIAPP","No existe el fichero en assets  ");
-            Log.i("MIAPP","Enviamos el e-mail sin fichero adjuto  ");
-            new  SendFileEmail().send(path);
-            finish();
-            //e.printStackTrace();
-        }
-        // EXISTE EL FICHERO - ENVIAMOS E-MAIL CON FICHERO ADJUNTO
-        File f = new File(path);  // siempre devuelve que f no existe
-        // COPIA EL FICHERO DE ASSETS
+        // FICHERO ORIGEN : DONDE ESTA EL INFORME
+        // src/main/assets/test.txt         * esta localizado en directorio assets
+        // FICHERO DESTINO : DONDE VAMOS A GUARDAR TEMPORALMENTE EL INFORME
         // src/main/assets/test.txt a --> data/data/a.bb.bbbb/files/test.txt
-        if (!f.exists())
+
+        // BUSCAMOS SI EL FICHERO DESTION ORIGEN EXISTE:
+        // 1- SI EXISTE : LO COPIAMOS AL DESTINO
+        // 2- NO EXISTE : ENVIAREMOS EL E-MAIL SIN EL INFORME INDICANDO QUE NO ESTA DISPONIBLE
             try {
                 Context context = getApplicationContext();
                 //opening text file located in assets directory
@@ -51,20 +44,23 @@ public class CopiaMain1Activity extends AppCompatActivity {
                 is.read(buffer);
                 is.close();
 
-                Log.i("MIAPP","path interno es : "+path);
-                FileOutputStream fos = openFileOutput("test.txt",MODE_PRIVATE);
+                Log.i("MIAPP", "path interno es : " + path);
+                FileOutputStream fos = openFileOutput("test.txt", MODE_PRIVATE);
                 //FileOutputStream fos = new FileOutputStream(f);
                 fos.write(buffer);
                 fos.close();
-                Log.i("MIAPP","Se ha creado test.txt en data/data... : "+path);
+                Log.i("MIAPP", "Se ha creado test.txt en data/data... : " + path);
 
-            } catch (Exception e) { throw new RuntimeException(e); }
-        //new  SendFileEmail().send(path);
-
+            } catch (Exception e) {
+                Log.i("MIAPP","No exite el fichero en assest- continuo");
+                //throw new RuntimeException(e);
+            }
+        // REQUERIMOS ENVIAR EL E-MAIL: CON O SIN FICHERO ADJUNTADO
         Intent intent=new Intent();
         intent.putExtra("MESSAGE",path);
         setResult(2,intent);
         finish();//finishing activity
         Log.i("MIAPP","el E-mail ha sido ordenado en SendFileEmail.send ");
+        // AHORA LA EJECUCION DEL PROGRAMA CONTINUARA EN MAINACTIVITY
     }
 }

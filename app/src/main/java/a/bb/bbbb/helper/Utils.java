@@ -16,6 +16,7 @@ public class Utils {
     public static final int REQUEST_AUTHORIZATION = 1001;
     public static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     public static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
+    public static final int REQUEST_INSERT_FILE_REPORT = 2;
 
     public static boolean isNotEmpty(EditText editText) {
         return editText.getText().toString().trim().length() > 0;

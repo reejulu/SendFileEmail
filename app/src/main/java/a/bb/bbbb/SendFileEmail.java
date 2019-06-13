@@ -31,18 +31,20 @@ public class SendFileEmail extends AsyncTask
     {
         Log.i("MIAPP","Estoy en SendFileEmail-send- (filepath) "+ filepath);
     onPostExecute(filepath);
+    }
 
 
+    @Override
+    protected Object doInBackground(Object[] objects) {
+        return null;
     }
 
     @Override
     protected void onPostExecute(Object o) {
         String filepath = (String) o;
         Log.i("MIAPP","Estoy en SendFileEmail-onPostExecuted- (filepath) "+ filepath);
-
         // Recipient's email ID needs to be mentioned.
         String to = "reejulu1@gmail.com";
-
         // Sender's email ID needs to be mentioned
         final String from = "ficharapp2019ap@gmail.com";
         // final String username = "xyz";
@@ -60,14 +62,9 @@ public class SendFileEmail extends AsyncTask
         properties.put("mail.smtp.port", "587");
         properties.put("mail.smtp.starttls.enable","true");
         properties.put("mail.smtp.auth", "true");
-
         //otro smtp
-
         properties.put("mail.smtp.host", "smtp.gmail.com");
-
-
         //Read more: http://mrbool.com/how-to-work-with-java-mail-api-in-android/27800#ixzz3E2T8ZbpJ
-
 
         // Get the default Session object.
         //Session session = Session.getDefaultInstance(properties);
@@ -78,35 +75,25 @@ public class SendFileEmail extends AsyncTask
             }
         });
 
-
         try{
             // Create a default MimeMessage object.
             MimeMessage message = new MimeMessage(session);
-
             // Set From: header field of the header.
             message.setFrom(new InternetAddress(from));
-
             // Set To: header field of the header.
             message.addRecipient(Message.RecipientType.TO,
                     new InternetAddress(to));
-
             // Set Subject: header field
             message.setSubject("This is the Subject Line!");
-
             // Create the message part
             BodyPart messageBodyPart = new MimeBodyPart();
-
             // Fill the message
             messageBodyPart.setText("This is message body");
-
             // Create a multipar message
             Multipart multipart = new MimeMultipart();
-
             // Set text message part
             multipart.addBodyPart(messageBodyPart);
-
             // Part two is attachment
-
             // check if file is present
             File file = new File(filepath);
             if (file.exists()){
@@ -116,16 +103,12 @@ public class SendFileEmail extends AsyncTask
                 messageBodyPart.setFileName(filepath);
                 multipart.addBodyPart(messageBodyPart);
             }
-
-
-
             MailcapCommandMap mc = (MailcapCommandMap) CommandMap.getDefaultCommandMap();
             mc.addMailcap("text/html;; x-java-content-handler=com.sun.mail.handlers.text_html");
             mc.addMailcap("text/xml;; x-java-content-handler=com.sun.mail.handlers.text_xml");
             mc.addMailcap("text/plain;; x-java-content-handler=com.sun.mail.handlers.text_plain");
             mc.addMailcap("multipart/*;; x-java-content-handler=com.sun.mail.handlers.multipart_mixed");
             mc.addMailcap("message/rfc822;; x-java-content- handler=com.sun.mail.handlers.message_rfc822");
-
             // Send the complete message parts
             message.setContent(multipart);
             // Send message
@@ -143,8 +126,4 @@ public class SendFileEmail extends AsyncTask
         super.onPostExecute(o);
     }
 
-    @Override
-    protected Object doInBackground(Object[] objects) {
-        return null;
-    }
 }
