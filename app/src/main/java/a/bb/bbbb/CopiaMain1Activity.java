@@ -20,7 +20,7 @@ public class CopiaMain1Activity extends AppCompatActivity {
         setContentView(R.layout.activity_main1);
         // EL FICHERO CON EL INFORME IRA GUARDADO EN path:
         //  para pruebas lo hemos llamado "text.txt"
-        path = "data/data/a.bb.bbbb/files/test.txt";
+        path = "data/data/a.bb.bbbb/files/informe.pdf";
         // SI EL FICHERO EXISTE HAY QUE BORRARLO PUES ESO SIGNIFICA QUE ES ANTIGUO
         File f = new File(path);
         f.delete();
@@ -37,7 +37,8 @@ public class CopiaMain1Activity extends AppCompatActivity {
                 Context context = getApplicationContext();
                 //opening text file located in assets directory
                 AssetManager assetManager = getAssets();
-                InputStream is = assetManager.open("test.txt");
+                //InputStream is = assetManager.open("test.txt");
+                InputStream is = assetManager.open("Colecciones.pdf");
 
                 int size = is.available();
                 byte[] buffer = new byte[size];
@@ -45,11 +46,11 @@ public class CopiaMain1Activity extends AppCompatActivity {
                 is.close();
 
                 Log.i("MIAPP", "path interno es : " + path);
-                FileOutputStream fos = openFileOutput("test.txt", MODE_PRIVATE);
+                FileOutputStream fos = openFileOutput("informe.pdf", MODE_PRIVATE);
                 //FileOutputStream fos = new FileOutputStream(f);
                 fos.write(buffer);
                 fos.close();
-                Log.i("MIAPP", "Se ha creado test.txt en data/data... : " + path);
+                Log.i("MIAPP", "Se ha creado informe.pdf en data/data... : " + path);
 
             } catch (Exception e) {
                 Log.i("MIAPP","No exite el fichero en assest- continuo");

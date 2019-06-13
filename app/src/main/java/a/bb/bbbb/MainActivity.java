@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
         edtMessage = (EditText) findViewById(R.id.body);
         edtAttachmentData = (EditText) findViewById(R.id.attachmentData);
         // Fill in different fields for our e-mail
-        edtToAddress.setText("reejulu1@gmail.com");
+     //   edtToAddress.setText("To write e-mail address destination");
         edtSubject.setText("Informe");
         edtMessage.setText("Adjunto se envia el fichero .pdf con el reporte semanal");
         // request to attacth the report pdf file to the e-mail

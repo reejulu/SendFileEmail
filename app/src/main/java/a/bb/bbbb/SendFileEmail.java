@@ -44,7 +44,7 @@ public class SendFileEmail extends AsyncTask
         String filepath = (String) o;
         Log.i("MIAPP","Estoy en SendFileEmail-onPostExecuted- (filepath) "+ filepath);
         // Recipient's email ID needs to be mentioned.
-        String to = "reejulu1@gmail.com";
+        String to = "xxxxxx@gmail.com";   // ************TO PUT DESTINATION ADDRESS
         // Sender's email ID needs to be mentioned
         final String from = "ficharapp2019ap@gmail.com";
         // final String username = "xyz";
