@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInstaller;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -21,7 +22,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toolbar;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -38,7 +38,6 @@ import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Properties;
@@ -54,17 +53,15 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
+import a.bb.bbbb.helper.GoogleMail;
 import a.bb.bbbb.helper.InternetDetector;
-import a.bb.bbbb.helper.Utils;
-
 import javax.mail.internet.MimeMessage;
 
-public class MainActivity extends AppCompatActivity {
+public class CopiaMainActivity extends AppCompatActivity {
 
 
     FloatingActionButton sendFabButton;
     EditText edtToAddress, edtSubject, edtMessage, edtAttachmentData;
-    private ImageView img11;
     Toolbar toolbar;
     GoogleAccountCredential mCredential;
 
@@ -81,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
     private InternetDetector internetDetector;
     private final int SELECT_PHOTO = 1;
     public String fileName = "";
-    private Uri photo_uri;
 
     @Override
 
@@ -137,7 +133,7 @@ with both your debug keystore and release keystore
                     photoPickerIntent.setType("image/*");
                     startActivityForResult(photoPickerIntent, SELECT_PHOTO);
                 } else {
-                    ActivityCompat.requestPermissions(MainActivity.this,
+                    ActivityCompat.requestPermissions(CopiaMainActivity.this,
                             new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, SELECT_PHOTO);
                 }
             }
@@ -149,7 +145,7 @@ with both your debug keystore and release keystore
                 if (a.bb.bbbb.helper.Utils.checkPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     startActivityForResult(mCredential.newChooseAccountIntent(), a.bb.bbbb.helper.Utils.REQUEST_ACCOUNT_PICKER);
                 } else {
-                    ActivityCompat.requestPermissions(MainActivity.this,
+                    ActivityCompat.requestPermissions(CopiaMainActivity.this,
                             new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, SELECT_PHOTO);
                 }
             }
@@ -177,23 +173,15 @@ with both your debug keystore and release keystore
         mProgress = new ProgressDialog(this);
         mProgress.setMessage("Sending...");
 
-       // toolbar = (Toolbar) findViewById(R.id.toolbar);
-       // setSupportActionBar(toolbar);
+        // toolbar = (Toolbar) findViewById(R.id.toolbar);
+        // setSupportActionBar(toolbar);
         sendFabButton = (FloatingActionButton) findViewById(R.id.fab);
         edtToAddress = (EditText) findViewById(R.id.to_address);
         edtSubject = (EditText) findViewById(R.id.subject);
         edtMessage = (EditText) findViewById(R.id.body);
         edtAttachmentData = (EditText) findViewById(R.id.attachmentData);
-        edtToAddress.setText("reejulu1@gmail.com");
-        edtSubject.setText("Informe");
-        edtMessage.setText("Adjunto se envia el fichero .pdf con el reporte semanal");
-
-        Intent intent = new Intent(this, CopiaMain1Activity.class);
-        startActivityForResult(intent,1);
 
     }
-
-
 
     private void showMessage(View view, String message) {
         Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
@@ -201,7 +189,7 @@ with both your debug keystore and release keystore
 
     private void getResultsFromApi(View view) {
         Log.i("MIAPP","Lista de mCredential es : " +mCredential.getAllAccounts().toString());
-         if (!isGooglePlayServicesAvailable()) {
+        if (!isGooglePlayServicesAvailable()) {
             acquireGooglePlayServices();
         } else if (mCredential.getSelectedAccountName() == null) {
             chooseAccount(view);
@@ -238,7 +226,7 @@ with both your debug keystore and release keystore
     void showGooglePlayServicesAvailabilityErrorDialog(final int connectionStatusCode) {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         Dialog dialog = apiAvailability.getErrorDialog(
-                MainActivity.this,
+                CopiaMainActivity.this,
                 connectionStatusCode,
                 a.bb.bbbb.helper.Utils.REQUEST_GOOGLE_PLAY_SERVICES);
         dialog.show();
@@ -257,7 +245,7 @@ with both your debug keystore and release keystore
                 startActivityForResult(mCredential.newChooseAccountIntent(), a.bb.bbbb.helper.Utils.REQUEST_ACCOUNT_PICKER);
             }
         } else {
-            ActivityCompat.requestPermissions(MainActivity.this,
+            ActivityCompat.requestPermissions(CopiaMainActivity.this,
                     new String[]{Manifest.permission.GET_ACCOUNTS}, a.bb.bbbb.helper.Utils.REQUEST_PERMISSION_GET_ACCOUNTS);
         }
     }
@@ -280,7 +268,7 @@ with both your debug keystore and release keystore
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case Utils.REQUEST_GOOGLE_PLAY_SERVICES:
+            case a.bb.bbbb.helper.Utils.REQUEST_GOOGLE_PLAY_SERVICES:
                 if (resultCode != RESULT_OK) {
                     showMessage(sendFabButton, "This app requires Google Play Services. Please install " +
                             "Google Play Services on your device and relaunch this app.");
@@ -288,7 +276,7 @@ with both your debug keystore and release keystore
                     getResultsFromApi(sendFabButton);
                 }
                 break;
-            case Utils.REQUEST_ACCOUNT_PICKER:
+            case a.bb.bbbb.helper.Utils.REQUEST_ACCOUNT_PICKER:
                 if (resultCode == RESULT_OK && data != null && data.getExtras() != null) {
                     String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                     if (accountName != null) {
@@ -301,7 +289,7 @@ with both your debug keystore and release keystore
                     }
                 }
                 break;
-            case Utils.REQUEST_AUTHORIZATION:
+            case a.bb.bbbb.helper.Utils.REQUEST_AUTHORIZATION:
                 if (resultCode == RESULT_OK) {
                     getResultsFromApi(sendFabButton);
                 }
@@ -312,26 +300,6 @@ with both your debug keystore and release keystore
                     fileName = getPathFromURI(imageUri);
                     edtAttachmentData.setText(fileName);
                 }
-
-
-
-        }
-        if(requestCode==1)
-        {
-            String filepath =data.getStringExtra("MESSAGE");
-            // check if file is present
-            File file = new File(filepath);
-
-            if (file.exists()){
-
-                photo_uri = Uri.parse(filepath);
-                fileName = filepath;
-                Log.i("MIAPP","fileName es : "+fileName);
-                edtAttachmentData.setText(fileName);
-                getResultsFromApi(sendFabButton);
-
-            }
-
         }
     }
 
@@ -354,9 +322,9 @@ with both your debug keystore and release keystore
         private com.google.api.services.gmail.Gmail mService = null;
         private Exception mLastError = null;
         private View view = sendFabButton;
-        private MainActivity activity;
+        private CopiaMainActivity activity;
 
-        MakeRequestTask(MainActivity activity, GoogleAccountCredential credential) {
+        MakeRequestTask(CopiaMainActivity activity, GoogleAccountCredential credential) {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
             JacksonFactory jsonFactory = JacksonFactory.getDefaultInstance();
             mService = new com.google.api.services.gmail.Gmail.Builder(
@@ -375,7 +343,7 @@ with both your debug keystore and release keystore
                 cancel(true);
                 return null;
             }
-          //  return null;
+            //  return null;
         }
 
         private String getDataFromApi() throws IOException {
@@ -403,7 +371,7 @@ with both your debug keystore and release keystore
                                    MimeMessage email)
                 throws MessagingException, IOException {
             Message message = createMessageWithEmail(email);
-             // GMail's official method to send email with oauth2.0
+            // GMail's official method to send email with oauth2.0
             message = service.users().messages().send(userId,message).execute();
 
             System.out.println("Message id: " + message.getId());
